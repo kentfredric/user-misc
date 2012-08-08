@@ -1,0 +1,90 @@
+#source "/etc/profile.d/bash-completion.sh"
+
+export PATH="~/bin/:$PATH";
+export PYTHONPATH="/home/kent/hgext/"
+#KDEV=$( readlink ~/.kde | sed 's/\.kde//' );
+#export KDEDIRS="/usr:/usr/local:/usr/kde/${KDEV}";
+
+source "/etc/profile.d/bash-completion.sh"
+
+shopt -s autocd
+#shopt -s failglob
+shopt -s globstar
+shopt -s histappend
+shopt -s no_empty_cmd_completion
+shopt -s nocaseglob
+set -o noclobber 
+#set -o nounset
+set +o histexpand
+alias 'l'='ls'
+alias 'slurm'='slurm -i eth0 -l -t cyan'
+alias 'peval'='perl /home/kent/bin/peval.pl'
+alias 'metagenx'='metagen -H perl -vmo  metadata.xml'
+export ECHANGELOG_USER='Kent Fredric <kentfredric@gmail.com>'; 
+export EDITOR=vim
+
+export MODULEBUILDRC_O="${MODULEBUILD_RC}"
+export MODULEBUILDRC="/home/kent/.perl/.modulebuildrc"
+export PERL_MM_OPT_O="${PERL_MM_OPT}"
+export PERL_MM_OPT="INSTALL_BASE=/home/kent/.perl"
+export PERL5LIB_O="${PERL5LIB}"
+export PERL5LIB="/home/kent/.perl/lib/perl5:/home/kent/.perl/lib/perl5/x86_64-linux:$PERL5LIB"
+export PATH_O="${PATH}"
+export PATH="/home/kent/.perl/bin:/home/kent/.gem/ruby/1.8/bin:$PATH"
+
+export GIT_PS1_SHOWDIRTYSTATE=1
+export GIT_PS1_SHOWSTASHSTATE=1
+export GIT_PS1_SHOWUNTRACKEDFILES=1
+export _GITIFY='$(__git_ps1 "[%s] ")';
+#export _GITIFY='';
+export PS1="\[\033[01;31m\]${_GITIFY}\[\033[01;32m\]\u@\H: \[\033[01;34m\]\w\n> \[\033[00m\]"
+#export PSOO="$PS1"
+#function promt_cmd { 
+#  case $TERM in 
+#  xterm*|rxvt*|urxvt*)
+#    vxx=$( perl ~/perl/shellcontract.pl/shellc.pl $PWD );
+#    export PS1="\[\033[01;32m\]\u@\h\[\033[01;34m\] ${vxx} \$\[\033[00m\] "
+#  ;;
+#  esac
+#  #export newPWD="$vxx"
+#  
+#}
+#
+#export PROMPT_COMMAND=promt_cmd
+#if [[ "${GPG_AGENT_INFO}x" == "x" || "${SSH_AUTH_SOCK}x" == "x" || "${SSH_AGENT_PID}x" == "x" ]]; 
+#  then eval $( gpg-agent --pinentry-program /usr/bin/pinentry-qt4 --enable-ssh-support -s --daemon 2>/dev/null );
+#fi;
+#source /home/kent/perl5/perlbrew/etc/bashrc
+
+fetch_mirror() {
+  declare name=$1;
+  declare path=$2;
+  for i in $( grep -i "^$name\s" /usr/portage/profiles/thirdpartymirrors | cut -f 2- \
+  ); do
+    echo "[31m$i[0m";
+    echo "[32m$i/$path[0m";
+    curl -L -I $i/$path;
+  done
+}
+
+fetch_cpan_extras() {
+  declare path=$1;
+  for i in http://cpan.hexten.net/ http://cpan.cpantesters.org http://www.cpan.org http://backpan.perl.org;
+  do
+    echo "[31m$i[0m";
+    echo "[32m$i/$path[0m";
+    curl -L -I $i/$path;
+  done
+}
+xbump() {
+  git add . ;
+  echangelog "Version Bump" && repoman manifest && repoman full
+}
+xgone() {
+  git add -u .;
+  git add .
+  echangelog "Gone on CPAN" && repoman manifest && repoman full && repoman ci -m "[cpanclean] $@";
+}
+xci() {
+  repoman ci -m "[newversion] $@";
+}

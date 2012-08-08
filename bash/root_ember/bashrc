@@ -1,0 +1,13 @@
+#[[ -f /etc/profile.d/bash-completion ]] &&
+#     source /etc/profile.d/bash-completion
+
+alias echangelog='ECHANGELOG_USER="Kent Fredric<kentfredric@gmail.com>" PORTDIR=/usr/local/portage/custom echangelog';
+export PALUDIS_FUTURE_THREAD_COUNT=3
+export PALUDIS_IDLE_THREAD_COUNT=3
+export PALUDIS_OPTIONS="--multitask"
+
+shopt -s autocd
+alias l=ls
+alias ll='ls -la'
+
+setterm -bfreq 2000 -blength 20
