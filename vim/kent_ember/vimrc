@@ -59,7 +59,7 @@ let g:Tlist_Show_One_File=0
 let g:Tlist_Display_Prototype=1
 let g:Tlist_Display_Tag_Scope=1
 
-set statusline=%m%r%h%w\ %F\ %y\ buf\ %n\ %#LineNr#\ char=\ %b\|0x%B\ \ off=\ %o\|0x%O\ \ %#Normal#%{VimBuddy()}\ line\ %l\ of\ %L\ \@pos\ %c(%v,%V)\ %p%%
+set statusline=%m%r%h%w\ %F\ %y\ buf\ %n\ %#LineNr#\ char=\ %b\|0x%B\ \ off=\ %o\|0x%O\ \ %#Normal\ line\ %l\ of\ %L\ \@pos\ %c(%v,%V)\ %p%%
 set laststatus=2
 
 let tlist_perl_settings  = 'perl;c:constants;l:labels;p:package;s:subroutines;d:POD'
