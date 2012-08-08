@@ -1,0 +1,17 @@
+# The Following Settings Apply to _every_ host we use. 
+# There appears to be no negative consequence to doing this except if you 
+# have your local box exploited somehow ( even thats dubious )
+# so it will just auto-multiplex connections
+ControlMaster auto
+ControlPath ~/.ssh/pool/%r@%h
+# This allows per-host private keys, so you don't have to have an open risk 
+# of comprimising all your hosts if one of your keys is exposed.
+# Will fall back to using the default if the Ident/user@host is not found
+IdentityFile ~/.ssh/ident/%r@%h
+IdentityFile ~/.ssh/id_rsa
+IdentityFile ~/.ssh/id_dsa
+ServerAliveCountMax 2
+ServerAliveInterval 5
+TCPKeepAlive yes
+
+
