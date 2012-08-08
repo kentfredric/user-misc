@@ -1,0 +1,12 @@
+" colorscheme chlordane
+" colorscheme cthulhian
+" colorscheme darkbone
+" colorscheme kred
+colorscheme kgreen
+set columns=120
+"set lines=100
+set mousemodel=popup_setpos
+" set guioptions-=T
+" set guioptions-=m
+set guifont=Terminus\ 7
+" set guifont=Envy\ Code\ R\ VS\ 10
