@@ -1,0 +1,210 @@
+set et
+set ts=2
+set sw=2
+set ai
+set cin
+set guifont=Terminus\ 7 
+set nu 
+set spl=en
+set mouse=a
+set sc
+set ul=10000
+set sm
+set sta
+set si
+set fen
+"set fdm=indent
+set fdls=1
+set backupdir=~/.vim/backup/
+set dir=~/.vim/swap
+set uc=50
+set history=10000
+set enc=utf-8
+set fenc=utf-8
+set fileformats=unix,dos,mac
+set fileformat=unix
+set termencoding=utf-8
+set modeline
+set modelines=5
+set viminfo+=c
+set sbr=\ >>\ 
+set cpo+=n
+set exrc
+"set listchars=eol:¶,tab:→-,trail:←,extends:…,precedes:…,nbsp:¢
+"set list
+"set winwidth=120
+"et winminwidth=120
+"set columns=120
+"set lines=50
+:filetype plugin indent on
+
+if ( &term =~ '-256color$'  && expand("$TMUX") !~  '' )
+  colorscheme delek
+else
+  colorscheme cthulhian
+endif
+
+"let g:Perl_AuthorName='Kent Fredric' 
+"let g:Perl_AuthorRef='theJackal'
+"let g:Perl_Email='kentfredric@gmail.com'
+"let g:Perl_CopyrightHolder='Kent Fredric'
+let g:Perl_PerlcriticSeverity=1
+let g:Perl_PerlcriticVerbosity=10
+let g:Perl_GlobalTemplateFile="/usr/share/vim/vimfiles/perl-support/templates/Templates"
+let g:Perl_LocalTemplateFile="/home/kent/.vim/perl-support/templates/Templates"
+let g:Perl_TemplateOverwrittenMsg='no'
+let g:Tlist_Show_Menu=1
+let g:Tlist_Process_File_Always=1
+let g:Tlist_Show_One_File=0
+let g:Tlist_Display_Prototype=1
+let g:Tlist_Display_Tag_Scope=1
+
+set statusline=%m%r%h%w\ %F\ %y\ buf\ %n\ %#LineNr#\ char=\ %b\|0x%B\ \ off=\ %o\|0x%O\ \ %#Normal#%{VimBuddy()}\ line\ %l\ of\ %L\ \@pos\ %c(%v,%V)\ %p%%
+set laststatus=2
+
+let tlist_perl_settings  = 'perl;c:constants;l:labels;p:package;s:subroutines;d:POD'
+let perl_fold = 1
+let perl_fold_blocks = 1
+let perl_nofold_packages = 1
+let perl_nofold_sub = 1
+
+function Ewarn( msg)
+
+  echohl WarningMsg
+  echomsg a:msg
+  echohl None
+
+endfunction
+
+function MyFoldTextir()
+  let lineno = v:foldstart
+  let jz = 1
+  let line = getline( lineno )
+  let linenext = getline( lineno + jz )
+
+  while ( linenext =~ '^[\s\r\n\t]*$' ) && ( jz < 5 )
+
+    let jz += 1
+    let linenext = getline( lineno + jz )
+
+  endwhile
+
+  if line =~? '^=\w\w*'
+    let podtype = line
+    let podtype = substitute( line, '^=\(\w\w*\)\s*.*$', '\1', '' )
+    let line = substitute( line , '^=\w\w*\s*', '', '' )
+    let line = substitute( line , '->\s*', 'METHOD ', '')
+    let linenext = substitute( linenext , '^=\w\w*\s*', '', '')
+    let linenext = substitute( linenext , '^\s*', '' , '')
+    let l = "POD(" . podtype . ")" . v:folddashes . " " . line . " : " . linenext
+    return l
+  endif
+  if line =~? '^\s*sub\s*'
+    let l = substitute( line, '^\s*sub\s*', 'SUB' . v:folddashes . ' ', 'g' ) . " | " . linenext . " "
+    return l
+  endif
+  if line =~? '^\s*has\s\s*[^ ][^ ]*\s*=>\s*('
+    let line = substitute( line, '^\s*has\s*', '', '')
+    let line = substitute( line, '\s*=>\s*(\s*','','')
+    let l = "HAS" . v:folddashes . " " . line . " ( "
+    return l
+  endif
+  return line . "--------------[ Block ]--"
+"  if( 
+"  let sub = substitute( sub, '$', ' ' , 'g' )
+"  return  suv .  in . bu . ' ' . Tlist_Get_Tagname_By_Line( bu, lineno ) .  @  . lineno
+"  return suv
+endfunction
+
+function MyFoldExpr(line)
+  let line = getline( a:line )
+"  if line=~'^has'
+"    return 'a1'
+"  endif
+"  if line=~'^)'
+"    return 's1'
+"  endif
+  if line =~ '([^()]*$'
+    if line =~ '^[^()]*)'
+      return '='
+    endif
+    return 'a1'
+  endif
+  if line =~ '^[^()]*)'
+      return 's1'
+  endif
+
+  if line=~'{[^{}]*$'
+    if line=~'^[^{}]*}' 
+      return '='
+    endif
+    return 'a1'
+  endif
+  if line=~'^[^{}]*}' 
+    return 's1'
+  endif
+
+  if line =~ '^=cut\s*$'
+    return 0
+  endif
+
+  if line =~ '^=\w\w*'
+    return 1
+  endif
+  return '='
+endfunction
+
+function XsetupPerl()
+  :set foldtext=MyFoldTextir()
+  :set foldexpr=MyFoldExpr(v:lnum)
+  :set foldmethod=expr
+  :set foldcolumn=2
+endfunction
+
+autocmd FileType perl 
+      \  :call XsetupPerl()
+
+
+
+
+augroup JP
+  au!
+
+  au BufNewFile,BufRead *.mt set filetype=mason 
+
+augroup END
+
+function TrimWhitespaceLine( value )
+  return substitute( a:value , '\s\s*$', "", "g" )
+endfunction
+
+function TrimWhitespaceFile()
+  :call setline( 1, map( getline( 1, '$' ), 'TrimWhitespaceLine( v:val )' ) )
+  :nohlsearch
+endfunction
+
+"autocmd FileType perl 
+"\  autocmd BufWritePre <buffer> 
+"\  :call TrimWhitespaceFile()
+
+
+set sessionoptions=blank,buffers,curdir,folds,help,resize,tabpages,winsize
+map <c-q> :mksession! .vimsession <cr>
+map <c-s> :source .vimsession <cr>
+
+:nohlsearch
+
+:com -range Cz :silent :<line1>,<line2>w !xsel -i -b
+:com -range Cx :silent :<line1>,<line2>w !xsel -i -p
+:com -range Cv :silent :<line1>,<line2>w !xsel -i -s
+:ca cv Cv
+:ca cz Cz
+:ca cx Cx
+
+:com -range Pz :silent :r !xsel -o -b
+:com -range Px :silent :r !xsel -o -p
+:com -range Pv :silent :r !xsel -o -s
+
+:ca pz Pz
+:ca px Px
+:ca pv Pv
