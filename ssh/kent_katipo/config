@@ -1,0 +1,17 @@
+ControlMaster auto
+ControlPath ~/.ssh/control/%r@%h:%p
+IdentityFile ~/.ssh/id_ecdsa.d/%r@%h
+IdentityFile ~/.ssh/id_ecdsa
+IdentityFile ~/.ssh/id_rsa.d/%r@%h
+IdentityFile ~/.ssh/id_rsa
+
+VerifyHostKeyDNS ask
+VisualHostKey yes
+CheckHostIP yes
+IPQoS reliability
+RekeyLimit 100M
+ServerAliveInterval 10
+TCPKeepAlive yes
+
+
+
